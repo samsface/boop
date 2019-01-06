@@ -220,11 +220,6 @@ class runner
 
 public:
 
-  runner()
-  {
-    Serial.println("runner");
-  }
-
   optional<reading> tick()
   {     
     return scripts_.next().tick(module_);

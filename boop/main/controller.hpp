@@ -1,6 +1,5 @@
 #include "config.hpp"
 #include "comm.hpp"
-#include "tuple.hpp"
 #include "script.hpp"
 
 void(*g_reboot)(void) = 0;
@@ -8,36 +7,16 @@ void(*g_reboot)(void) = 0;
 struct comms
 {
   const config::config& c;
-  //comm::client<comm::channel::rs485, comm::protocol> serial2;
   comm::client<comm::channel::hardware_serial, comm::protocol> serial;
-  //comm::client<comm::channel::ethernet, comm::protocol> ethernet;
   comm::client<comm::channel::wifi, comm::protocol> wifi;
 
   comms(const config::config& c) : c{ c }
   {}
 
-  template<typename ...Args>
-  void write_all(Args& ...args)
-  {
-    //ethernet.write(args...);
-    //wifi.write(args...);
-    serial.write(args...);
-  }
-
   void write(const message& m)
   {
     serial.write(m);
     wifi.write(m);
-    /*
-    if(c.is_master.get())
-    {
-      //ethernet.write(m);
-      //wifi.write(m);
-    }
-    else
-    {
-      serial.write(m);
-    }*/
   }
 
   template<typename ...Args>
@@ -45,17 +24,6 @@ struct comms
   {
     serial.write_event(args...);
     wifi.write_event(args...);
-    /*
-    if(c.is_master.get())
-    {
-      //ethernet.write_event(args...);
-      //wifi.write_event(args...);
-    }
-    else 
-    {
-      serial.write_event(args...);
-    }
-    */
   }
 
   template<typename ...Args>
@@ -63,17 +31,6 @@ struct comms
   {
     serial.write_ack(args...);
     wifi.write_ack(args...);
-    /*
-    if(c.is_master.get())
-    {    
-      //ethernet.write_ack(args...);
-      //wifi.write_ack(args...);
-    }
-    else
-    {
-      serial.write_ack(args...);
-    }
-    */
   }
 };
 
@@ -126,7 +83,7 @@ class controller
     }
   }
 
-  void dispatch_message(const optional<message>& optional_msg)
+  void handle_message(const optional<message>& optional_msg)
   {    
     if(optional_msg)
     {
@@ -136,6 +93,17 @@ class controller
       else if(msg.is_function()) handle_function(msg);
       else if(msg.is_event())    handle_event(msg);
     }
+  }
+    
+  void read_comms()
+  {
+    handle_message(comm_.serial.read());
+    handle_message(comm_.wifi.read());
+  }
+    
+  void check_health()
+  {
+    comm_.wifi.check_health();
   }
 
   void run_scripts()
@@ -159,14 +127,11 @@ public:
 
   void tick()
   {
-      Serial.println("tick");
-      dispatch_message(comm_.serial.read());
-      dispatch_message(comm_.wifi.read());
-      //dispatch_message(comm_.wifi.read());
-      //dispatch_message(comm_.ethernet.read());
+      read_comms();
+      
+      check_health();
+      
       run_scripts();
-
-      comm_.wifi.write({83, 97, 77});
   }
     
   void tick(size_t count)

@@ -1,6 +1,6 @@
 #pragma once
 
-using byte = uint8_t;
+#include <Arduino.h>
 
 struct SoftwareSerial
 {

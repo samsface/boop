@@ -40,5 +40,10 @@ public:
   {
     write({ address, ack_code, acking });
   }
+    
+  void check_health()
+  {
+    channel_.check_health();
+  }
 };
 }

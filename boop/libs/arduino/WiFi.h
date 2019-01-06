@@ -1,11 +1,12 @@
 #pragma once
 
-using byte = uint8_t;
+#include <Arduino.h>
 
 const int WL_CONNECT_FAILED = 0;
 const int WL_CONNECTION_LOST = 1;
 const int WL_DISCONNECTED = 2;
 const int WL_CONNECTED = 3;
+const int WL_IDLE_STATUS = 4;
 
 namespace detail
 {
@@ -13,6 +14,11 @@ struct wifi
 {
     void begin(const byte*, const byte*)
     {}
+    
+    int status() const
+    {
+        return 0;
+    }
     
     int RSSI() const
     {
@@ -33,13 +39,10 @@ struct WiFiClient
         return true;
     }
     
-    int status() const
+    bool connect(const byte*, int)
     {
-        return 0;
+        return true;
     }
-    
-    void connect(const byte*, int)
-    {}
     
     void write(const byte*, size_t)
     {}

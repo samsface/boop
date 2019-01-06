@@ -1,8 +1,7 @@
 #pragma once
 
 #include <array>
-
-using byte = uint8_t;
+#include <Arduino.h>
 
 template<size_t Size>
 struct eeprom

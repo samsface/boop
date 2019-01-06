@@ -105,8 +105,6 @@ struct module
   led0{ 1, 200, 200 },
   led1{ 3, 200, 200 },
   button0{ 4 }
-  {
-    Serial.println("module");
-  }
+  {}
 }; 
 }

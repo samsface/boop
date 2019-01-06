@@ -2,17 +2,13 @@
 
 #include <queue>
 
-using byte = uint8_t;
+using byte = char;
 
 const int OUTPUT = 0;
 const int INPUT_PULLUP = 1;
 const int LED_BUILTIN = 2;
 const byte LOW = 0;
 const byte HIGH = 1;
-
-
-
-
 
 namespace detail
 {
@@ -110,6 +106,9 @@ long random(long min, long max)
 {
     return 0;
 }
+
+void delay(int)
+{}
 
 
 

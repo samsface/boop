@@ -1,6 +1,5 @@
 #pragma once
 
-//#include <Arduino.h>
 #include <SoftwareSerial.h>
 //#include <Ethernet.h>
 #include <ESP8266WiFi.h>
@@ -179,42 +178,8 @@ class wifi
 {
   WiFiClient client_;
 
-  void connect()
-  {    
-    if(!client_.connected())
-    {
-      if(WiFi.status() != WL_CONNECTED)
-      {
-         WiFi.begin("VM1EC2332", "j7a6Ntfzkrpr");
-         while(WiFi.status() != WL_CONNECTED)
-         {
-            Serial.println("connecting");
-            delay(1000);
-         }
- 
-         Serial.println("client");
-         
-         if(client_.connect(IPAddress{192, 168, 0, 185}, 8080))
-         {
-            Serial.println("success of client");
-         }
-         else
-         {
-            Serial.println("failed to client");
-         }
-
-         delay(2000);
-      }
-    }
-  }
-
 public:
 
-  wifi()
-  {
-    connect();
-  }
-  
   bool available()
   { 
     return client_.available();
@@ -222,7 +187,6 @@ public:
 
   void write(const byte* buf, size_t len)
   { 
-    Serial.println(len);
     client_.write(buf, len); 
   }
 
@@ -234,6 +198,26 @@ public:
   long strength() const
   {
     return WiFi.RSSI();
+  }
+    
+  void check_health()
+  {
+    if(WiFi.status() == WL_IDLE_STATUS)
+    {
+        return;
+    }
+    else if(WiFi.status() != WL_CONNECTED)
+    {
+        WiFi.begin("VM1EC2332", "j7a6Ntfzkrpr");
+    }
+    else if(client_.connected())
+    {
+        return;
+    }
+    else if(client_.connect("192.168.0.185", 8080))
+    {
+        return;
+    }
   }
 
   ~wifi()
