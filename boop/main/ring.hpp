@@ -1,6 +1,6 @@
 #pragma once
 
-#include "vector.hpp"
+#include "array.hpp"
 
 template <typename T, size_t Capacity>
 class ring

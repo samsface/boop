@@ -1,6 +1,6 @@
 #pragma once
 
-#include "vector.hpp"
+#include "array.hpp"
 #include "ring.hpp"
 #include "optional.hpp"
 #include "message.hpp"

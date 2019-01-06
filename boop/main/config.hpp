@@ -1,7 +1,7 @@
 #pragma once
 
 #include <EEPROM.h>
-#include "vector.hpp"
+#include "array.hpp"
 
 namespace config
 {
@@ -41,11 +41,11 @@ struct config
 
   // wifi settings
   setting<buff16, 17> wifi_ssid;
-  setting<buff16, 16> wifi_pass;
+  setting<buff16, 33> wifi_pass;
 
   // server settings
-  setting<buff16, 16> server_hostname;
-  setting<unsigned short, 16> server_port;
+  setting<buff16, 49> server_hostname;
+  setting<unsigned short, 65> server_port;
   
   config()
   {        

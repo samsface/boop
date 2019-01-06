@@ -1,3 +1,5 @@
+#pragma once
+
 #include "config.hpp"
 #include "comm.hpp"
 #include "script.hpp"
@@ -68,8 +70,6 @@ class controller
       else if(msg.function_code == set_wifi_pass) config_.wifi_pass.set(msg.value);
 
       comm_.write_ack(msg.address, msg.ack);
-
-      comm_.wifi.write({0, 99, 10});
     }
     else if(config_.is_relay.get())
     {
@@ -103,12 +103,6 @@ class controller
     
     handle_message(comm_.serial.read());
     handle_message(comm_.wifi.read());
-
-    static unsigned int iii = 0;
-    if(iii++ % 100000 == 0)
-    {
-      comm_.wifi.write({65, 65, 65});
-    }
   }
   
   void run_scripts()

@@ -103,8 +103,8 @@ struct module
 
   module() : 
   led0{ 1, 200, 200 },
-  led1{ 2, 200, 200 },
-  button0{ 200 }
+  led1{ 200, 200, 200 },
+  button0{ 2 }
   {}
 }; 
 }

@@ -17,7 +17,7 @@ public:
 
   hardware_serial()
   {
-    //Serial.begin(9600);
+    Serial.begin(9600);
   }
 
   bool available() const
@@ -39,8 +39,13 @@ public:
   {
     return 0;
   }
+
+  void keep_alive()
+  {
+  }
 };
 
+/*
 // software serial
 /////////////////////////////////////////////////////
 
@@ -116,7 +121,7 @@ public:
 
 // ethernet
 /////////////////////////////////////////////////////
-/*
+
 class ethernet
 {
   EthernetClient client_;

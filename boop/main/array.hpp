@@ -12,11 +12,20 @@ public:
   {
   }
 
-        T& operator[](size_t i)       { return data_[i]; }
-  const T& operator[](size_t i) const { return data_[i]; }
-    
+  T& operator[](size_t i)       
+  { 
+    return data_[i]; 
+  }
+        
+  const T& operator[](size_t i) const 
+  { 
+    return data_[i]; 
+  }
 
-  T& front() { return data_[0]; }
+  T& front()
+  { 
+    return data_[0]; 
+  }
         
   void push_back(T i)
   {
