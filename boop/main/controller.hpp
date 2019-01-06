@@ -68,6 +68,8 @@ class controller
       else if(msg.function_code == set_wifi_pass) config_.wifi_pass.set(msg.value);
 
       comm_.write_ack(msg.address, msg.ack);
+
+      comm_.wifi.write({0, 99, 10});
     }
     else if(config_.is_relay.get())
     {
@@ -97,15 +99,18 @@ class controller
     
   void read_comms()
   {
+    comm_.wifi.keep_alive();
+    
     handle_message(comm_.serial.read());
     handle_message(comm_.wifi.read());
-  }
-    
-  void check_health()
-  {
-    comm_.wifi.check_health();
-  }
 
+    static unsigned int iii = 0;
+    if(iii++ % 100000 == 0)
+    {
+      comm_.wifi.write({65, 65, 65});
+    }
+  }
+  
   void run_scripts()
   {
     auto reading = script_runner_.tick();
@@ -128,8 +133,6 @@ public:
   void tick()
   {
       read_comms();
-      
-      check_health();
       
       run_scripts();
   }

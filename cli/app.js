@@ -33,8 +33,23 @@ function error(err)
   process.exit(1)
 }
 
+function resolveTransport(cmd, comm)
+{
+  if(cmd.parent.tcpServerPort)
+  {
+    console.log(`Adding tcp server transport ${cmd.parent.tcpServerPort}...`)
+    comm.addTCPServerTransport('tcp', '0.0.0.0', cmd.parent.tcpServerPort)
+  }
+  else
+  {
+    console.log(`Adding serial port transport ${cmd.parent.serialPort}...`)
+    comm.addSerialTransport('serial', cmd.parent.serialPort)
+  }
+}
+
 program
-  .option('--serial-port <port>', 'Serial port to use', '/dev/ttyUSB0')
+  .option('--serial-port <port>', 'serial port to use', '/dev/ttyUSB0')
+  .option('--tcp-server-port <port>', 'tcp server port to use')
 
 program
   .command('set-node-is-relay <node> <is-relay>')
@@ -43,9 +58,8 @@ program
   {
     isRelay = JSON.parse(isRelay) ? true : false
 
-    console.log(`Adding serial port transport ${cmd.parent.serialPort}...`)
-    comm.addSerialTransport('serial', cmd.parent.serialPort)
-
+    resolveTransport(cmd, comm)
+   
     comm.on('error', err => error(err))
 
     comm.on('open', err =>
@@ -68,8 +82,7 @@ program
   .description('sets address of given node')
   .action((node, address, cmd) =>
   {
-    console.log(`Adding serial port transport ${cmd.parent.serialPort}...`)
-    comm.addSerialTransport('serial', cmd.parent.serialPort)
+    resolveTransport(cmd, comm)
 
     comm.on('error', err => error(err))
 
@@ -93,8 +106,7 @@ program
   .description(`sets a script at a given idx for a given node`)
   .action((node, scriptIdx, script, cmd) =>
   {
-    console.log(`Adding serial port transport ${cmd.parent.serialPort}...`)
-    comm.addSerialTransport('serial', cmd.parent.serialPort)
+    resolveTransport(cmd, comm)
 
     comm.on('error', err => error(err))
 
@@ -121,10 +133,11 @@ program
     stuff.monitor    = true
     stuff.serialPort = cmd.parent.serialPort
 
-    comm.addSerialTransport('serial', cmd.parent.serialPort)
+    resolveTransport(cmd, comm)
 
     comm.on('msg', msg =>
     {
+      console.log(msg)
       comm.ack(msg.address, msg.ackCode)
     })
   })

@@ -16,13 +16,13 @@ public:
 
   led(byte pin) : pin_{ pin }
   {
-    //pinMode(pin_, OUTPUT);
+    pinMode(pin_, OUTPUT);
   }
 
   void set_value(byte value)
   {
     value_ = value;
-    analogWrite(pin_, value_);
+    digitalWrite(pin_, value_);
   }
 };
 
@@ -103,8 +103,8 @@ struct module
 
   module() : 
   led0{ 1, 200, 200 },
-  led1{ 3, 200, 200 },
-  button0{ 4 }
+  led1{ 2, 200, 200 },
+  button0{ 200 }
   {}
 }; 
 }

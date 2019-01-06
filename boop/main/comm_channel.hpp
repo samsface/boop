@@ -167,16 +167,11 @@ public:
 */
 // wifi
 ///////////////////////////////////////////////////////////////////////////////
-/*
-TX from ESP8266 is connected to D2, RX to D3 of the Arduino (via 1K resistor). 
-Beware that the 3.3V from the Arduino is usually not sufficient* to power the 
-ESP8266 module. The ESP8266 needs a separate 3.3V power source, eg. from a 
-breadboard power connector:
-*/
 
 class wifi
 {
   WiFiClient client_;
+  long last_connect_attempt_time_ = 0;
 
 public:
 
@@ -200,29 +195,33 @@ public:
     return WiFi.RSSI();
   }
     
-  void check_health()
+  void keep_alive()
   {
-    if(WiFi.status() == WL_IDLE_STATUS)
+    if(client_.connected())
     {
-        return;
     }
-    else if(WiFi.status() != WL_CONNECTED)
+    else if(WiFi.status() == WL_CONNECTED)
     {
+      last_connect_attempt_time_ = 0;
+      // this call is synchronous
+      client_.connect("192.168.0.185", 8080);
+    }
+    else if(last_connect_attempt_time_ == 0)
+    {      
+        last_connect_attempt_time_ = millis();
         WiFi.begin("VM1EC2332", "j7a6Ntfzkrpr");
     }
-    else if(client_.connected())
+    else if(millis() - last_connect_attempt_time_ > 5000)
     {
-        return;
-    }
-    else if(client_.connect("192.168.0.185", 8080))
-    {
-        return;
+      WiFi.disconnect();
+      last_connect_attempt_time_ = 0;
     }
   }
 
   ~wifi()
   {
     client_.stop();
+    WiFi.disconnect();
   }
 };
 

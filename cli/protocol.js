@@ -1,8 +1,3 @@
-const net = require('net')
-const SerialPort = require('serialport')
-
-///////////////////////////////////////////////////////////////////////////////
-
 class Protocol
 {
   constructor()
@@ -13,6 +8,8 @@ class Protocol
   read(buffer)
   {
     if(buffer) this.buffer_ = Buffer.concat([this.buffer_, buffer])
+
+    console.log('r', this.buffer_)
 
     if(this.buffer_.length >= 23)
     {
@@ -38,7 +35,6 @@ class Protocol
 
   write(address, ack_code, function_code, data)
   {
-    console.log(address, ack_code, function_code, data)
     const buffer = Buffer.alloc(23);
 
     buffer.writeUInt16LE(address, 0)
@@ -51,6 +47,8 @@ class Protocol
     }
  
     buffer.writeUInt16LE(0, 5)
+
+    console.log('w', buffer)
 
     return buffer
   }
@@ -89,44 +87,9 @@ class Serial
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class TCPServer
+class tcp
 {
-  constructor(host = '0.0.0.0', port = 8080)
-  {
-    this.events_ = 
-    {
-      open:  () => {},
-      data:  () => {},
-      error: () => {}
-    }
-
-    this.socks_ = []
   
-    this.server_ = net.createServer()
-
-    this.server_.on('connection', sock =>
-    {
-      this.socks_.push(sock)
-      this.events_.open()
-      sock.on('data', data => this.events_.data(data))
-    })
-
-    this.server_.listen(port, host, () =>
-    {
-      console.log(`tcp server is UP`)
-    })
-  }
-
-  write(buffer, fnc)
-  {
-    for(let sock of this.socks_)
-    {
-      console.log(buffer)
-      sock.write(buffer)
-    }
-  }
-
-  on(name, fnc) { this.events_[name] = fnc }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -212,7 +175,6 @@ class Comm
     {
       set_led0_off:         1,
       set_led0_solid_white: 2,
-      set_led0_flash_white: 9,
   
       set_led1_off:         16,
       set_led1_solid_white: 17,
@@ -267,8 +229,10 @@ class Comm
       if(msg.ackCode in this.handles_) this.handles_[msg.ackCode].fnc(msg)
       delete this.handles_[msg.ackCode]
     }
-
-    this.events_.msg(msg, channel)
+    else
+    {
+      this.events_.msg(msg, channel)
+    }
   }
 
   on_error(channel, msg)
@@ -279,17 +243,6 @@ class Comm
   addSerialTransport(name, path, baudRate, fnc = () => {})
   {
     const c = new Channel(name, new Serial(path, baudRate), new Protocol())
-
-    c.on('open',  (...args) => this.on_open (c, ...args))
-    c.on('msg',   (...args) => this.on_msg  (c, ...args))
-    c.on('error', (...args) => this.on_error(c, ...args))
-
-    this.channels_.push(c)
-  }
-
-  addTCPServerTransport(name, host, port, fnc = () => {})
-  {
-    const c = new Channel(name, new TCPServer(host, port), new Protocol())
 
     c.on('open',  (...args) => this.on_open (c, ...args))
     c.on('msg',   (...args) => this.on_msg  (c, ...args))

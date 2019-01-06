@@ -41,9 +41,9 @@ public:
     write({ address, ack_code, acking });
   }
     
-  void check_health()
+  void keep_alive()
   {
-    channel_.check_health();
+    channel_.keep_alive();
   }
 };
 }
