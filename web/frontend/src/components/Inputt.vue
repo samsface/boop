@@ -1,7 +1,8 @@
 <template>
 <div class="field">
-  <div class="control is-medium" v-bind:class="{ 'is-loading': working }">
-    <input class="input is-medium"
+  <label class="label">{{label}}</label>
+  <div class="control" v-bind:class="{ 'is-loading': working }">
+    <input class="input"
            v-bind:class="{ 'is-danger' : error, 'is-success': success }"
            type="text" 
            :placeholder="placeholder" 
@@ -26,7 +27,7 @@ function on_change()
 
 export default 
 {
-  props: ['value', 'error', 'success', 'working', 'placeholder'],
+  props: ['label', 'value', 'error', 'success', 'working', 'placeholder'],
   data () 
   {
     return {

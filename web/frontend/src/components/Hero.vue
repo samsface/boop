@@ -1,7 +1,7 @@
 <template>
    <span>
 
-      <section class="hero is-fullheight is-light">
+      <section class="hero is-fullheight">
 
          <navv/>
 
@@ -12,10 +12,9 @@
                <h1 class="title is-1">
                   Easy WiFi Buttons
                </h1>
-               <h2 class="subtitle fade-out-start">
+               <h2 class="subtitle">
                   This is a stupud thing nobody reads.
                </h2>
-               <search-form v-on:req="on_req"/>
             </div>
 
          </div>
@@ -29,16 +28,9 @@
 import Navv  from './Navv'
 import Footerr from './Footerr'
 
-function on_req(req)
-{
-   this.$router.push({ name: 'Search', query: Object.assign({}, this.$route.query, req) })
-}
-
 export default 
 {
   name: 'hero',
-  methods: { on_req },
-  created: function(){ if(session.has_seen_hero) { this.on_req() } session.has_seen_hero = true;  },
   components: { Navv, Footerr }
 }
 </script>

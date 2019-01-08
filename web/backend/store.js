@@ -1,5 +1,6 @@
 const sqlite3 = require('sqlite3').verbose();
 
+
 class Store
 {
   constructor()
@@ -81,6 +82,21 @@ class Store
       {
         if(err) reject(err)
         else    resolve({})
+      })
+    })
+  }
+  
+  deleteDevice(id)
+  {
+    return new Promise((resolve, reject) =>
+    {
+      this.db_.run(`DELETE FROM devices WHERE id = ?`, 
+      [id], 
+      (err, res) =>
+      {
+		  console.log(err, res)
+        if(err) reject(err)
+        else    resolve()
       })
     })
   }

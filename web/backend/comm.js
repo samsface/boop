@@ -108,7 +108,8 @@ class TCPServer
     {
       this.socks_.push(sock)
       this.events_.open()
-      sock.on('data', data => this.events_.data(data))
+      sock.on('data',  data  => this.events_.data (data))
+	  sock.on('error', error => this.events_.error(error))
     })
 
     this.server_.listen(port, host, () =>

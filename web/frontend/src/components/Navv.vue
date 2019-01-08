@@ -16,11 +16,11 @@
                 <div class="field is-grouped">
 
                  <p class="control">
-                    <router-link :to="{ name: 'Settings' }" class="button is-link">
+                    <router-link :to="{ name: 'Devices' }" class="button is-link">
                       <span class="icon">
                         <i class="fa">🤖</i>
                       </span>
-                      <span>My Booprs</span>
+                      <span>My Devices</span>
                     </router-link>
                   </p>                         
                 </div>

@@ -31,7 +31,7 @@ class Mailer
           text
         }
       
-        this.transport_.sendMail(args, (err, info) =>
+        this.transport_.sendMail(args, err =>
         {
           if(err) reject(err)
           else    resolve()

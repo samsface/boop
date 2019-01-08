@@ -7,24 +7,22 @@
                <br>
                Contact us at: <a href="mailto:boopr.bot@gmail.com">boopr.bot@gmail.com</a>
             </p>
-            <p>
-               🤖💬
-            </p>
+            <p>🤖💬</p>
          </div>
       </div>
    </footer>
 </template>
 
 <script>
-export default {
+export default 
+{
   name: 'footerr',
-  data () {
-    return {
-    }
+  data () 
+  {
+    return {}
   }
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 </style>

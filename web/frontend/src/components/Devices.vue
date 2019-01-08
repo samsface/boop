@@ -1,46 +1,35 @@
 <template>
 
 <span>
-  <notifications v-bind:req="req"></notifications>
   <section class="hero is-fullheight is-light">
+
     <navv/>
-    <loading v-if="is_busy"></loading>
 
     <div class="columns">
 
       <div class="column is-half is-offset-one-quarter">
        
-        <h3 class="subtitle" style="padding-left:1.5rem;"><small>My Booprs</small></h3>
+        <h3 class="subtitle" ><small style="padding-left: 12px;">My Devices:</small></h3>
 
         <template v-for="e in this.res" >
+          <!-- -->
           <div :key="e.id">
             <div class="card">
               <div class="card-content" >
                   <div class="media" >
-                    <div class="media-left">
-                      <figure class="image is-48x48" style="text-align: center">
-                        <i class="fas fa-sss has-text-info" aria-hidden="true" style="font-size: 2.5rem"></i>
-                      </figure>
-                    </div>
                     <div class="media-content" style="overflow: hidden">
-                      <p class="title is-1" style="text-transform: capitalize;">{{e.name}}</p>
+                      <p class="title is-3" style="text-transform: capitalize;">{{e.name || 'Unamed Device'}}</p>
                     </div>
                   </div>
               </div>
             </div>
             <!-- -->
-            <!-- -->
             <div class="card">
               <div class="card-content" >
                   <div class="media" >
-                    <div class="media-left">
-                      <figure class="image is-48x48" style="text-align: center;">
-                        <i class="fas has-text-info" aria-hidden="true" style="font-size: 2.5rem;">🆔</i>
-                      </figure>
-                    </div>
                     <div class="media-content" style="overflow: hidden">
-                      <p class="title is-4">Device Name:</p>
-                      <inputt placeholder="e.g. Porch Door Sensor"
+                      <inputt label="🆔 Device ID"
+                              placeholder="e.g. Porch Door Sensor"
                               :value="e.name" 
                               :working="handles[e.id + '_name'].timeout" 
                               :success="handles[e.id + '_name'].success"
@@ -55,14 +44,9 @@
             <div class="card">
               <div class="card-content" >
                   <div class="media" >
-                    <div class="media-left">
-                      <figure class="image is-48x48" style="text-align: center;">
-                        <i class="fas has-text-info" aria-hidden="true" style="font-size: 2.5rem;">✉️</i>
-                      </figure>
-                    </div>
                     <div class="media-content" style="overflow: hidden">
-                      <p class="title is-4">Email Updates:</p>
-                      <inputt placeholder="e.g. youremail@gmail.com"
+                      <inputt label="✉️ Email Updates"
+                              placeholder="e.g. youremail@email.com"
                               :value="e.email" 
                               :working="handles[e.id + '_email'].timeout" 
                               :success="handles[e.id + '_email'].success"
@@ -77,26 +61,33 @@
             <div class="card">
               <div class="card-content" >
                   <div class="media" >
-                    <div class="media-left">
-                      <figure class="image is-48x48" style="text-align: center;">
-                        <i class="fab has-text-info" aria-hidden="true" style="font-size: 2.5rem;">📉</i>
-                      </figure>
-                    </div>
                     <div class="media-content" style="overflow: hidden">
-                      <p class="title is-4">Google Sheets:</p>
-                      <inputt placeholder="e.g. youremail@gmail.com"
+                      <inputt label="📉 Google Sheets"
+                              placeholder="e.g. youremail@gmail.com"
                               :value="e.sheetsEmail" 
                               :working="handles[e.id + '_sheetsEmail'].timeout" 
                               :success="handles[e.id + '_sheetsEmail'].success"
                               v-on:change="val => on_device_property_change(e.id, 'sheetsEmail', val)"/>
                       <p class="subtitle is-6">Your device will feed data into a sheet on your Google Drive.</moment></p>
-                      <p v-if="e.sheetsId" class="subtitle is-6"><a class="has-text-link" :href="link(e.sheetsId)">Goto Google Sheets</a></p>           
+                      <p v-if="e.sheetsId" class="subtitle is-6"><a class="has-text-link" :href="link(e.sheetsId)">Open in Google Sheets</a></p>           
                     </div>
                   </div>
               </div>
             </div>
             <!-- -->
+            <div class="card">
+              <div class="card-content" >
+                  <div class="media" >
+                    <div class="media-content" style="overflow: hidden">
+                      <a class="button is-danger" v-on:click="on_delete_device(e.id)">Forget this Device</a>
+                    </div>
+                  </div>
+              </div>
+            </div>
+            <!-- -->
+            <div style="padding: 10px"></div>
           </div>
+  
         </template>
 
       </div>
@@ -131,12 +122,23 @@ function on_device_property_change(id, property, value)
       else
       {
         this.res.find(r => r.id == id)[property] = value
-        this.$set(this.handles[id + '_' + property], 'success', 'Device name changed OK.')
+        this.$set(this.handles[id + '_' + property], 'success', 'Device setting changed OK.')
       }
    
       this.handles[id + '_' + property].timeout = null
     })
   }, 500)
+}
+
+function on_delete_device(id)
+{
+  if(!confirm('Are you sure you want to forget this device?')) return
+
+  api.delete_device({ id }, err =>
+  {
+    if(err) alert(err)
+    else    this.res.splice(this.res.find(r => r.id == id), 1)
+  })
 }
 
 function created()
@@ -160,7 +162,7 @@ function link(sheetId)
 
 export default 
 {
-  name: 'settings',
+  name: 'devices',
   data () 
   {
     return {
@@ -173,63 +175,16 @@ export default
     }
   },
   created: created,
-  methods: { on_device_property_change, link },
+  methods: { on_device_property_change, on_delete_device, link },
   components: { Navv, Footerr, Inputt }
 }
 </script>
 
 <style scoped>
-.search-form
-{
-  padding: 10px 24px 10px 24px;
-}
 
 .hero 
 {
    justify-content: initial;
 }
-
-.tutorial
-{
-  max-width: 400px;
-  margin: auto auto auto auto;
-}
-
-textarea
-{
-  border: none;
-  color: rgba(54,54,54,.9);
-  font-size: 1rem;
-}
-
-.tile.ancestor
-{
-  margin: 0px;
-}
-
-input
-{
-  font-weight: bold;
-}
-
-@media (max-width: 450px) 
-{
-  .columns
-  {
-    margin-left: 0px;
-    margin-right: 0px;
-  }
-
-  .column
-  {
-    padding-left: 0px;
-    padding-right: 0px;
-  }
-
-  .title.is-1
-  {
-    font-size: 2.5rem;
-  }
-} 
 
 </style>

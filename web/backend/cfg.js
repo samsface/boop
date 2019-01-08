@@ -3,7 +3,7 @@ const cfg =
    mailer:
    {
       user: 'boopr.bot@gmail.com',
-      pass: ''
+      pass:
    },
    sheets: 
    {

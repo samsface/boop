@@ -2,7 +2,7 @@ const cfg        = require('./cfg')
 const express    = require('express')
 const cors       = require('cors')
 const bodyParser = require('body-parser')
-const Store      = require('./db')
+const Store      = require('./store')
 const Comm       = require('./comm')
 const Mailer     = require('./mailer')
 const Sheets     = require('./sheets')
@@ -45,6 +45,11 @@ class Controller
     this.init_()
   }
 
+  initExpress_()
+  {
+    
+  }
+
   init_()
   {
     // hookup express
@@ -73,11 +78,18 @@ class Controller
         {
           device.sheetsEmail = req.body.sheetsEmail
           
-          device.sheetsId    = await this.sheets_.createSheet(
-          { 
-            title:     `boopr device ${device.name || device.id} log`,
-            shareWith: device.sheetsEmail
-          })
+          if(device.sheetsEmail)
+          {
+            device.sheetsId = await this.sheets_.createSheet(
+            { 
+              title:     `boopr device ${device.name || device.id} log`,
+              shareWith: device.sheetsEmail
+            })
+          }
+          else
+          {
+            device.sheetsId = ''
+          }
         }
 
         if('email' in req.body && 
@@ -96,6 +108,16 @@ class Controller
       }
       catch(err) { next(err) } 
     })
+	
+	this.express_.delete('/api/v1/devices', async (req, res, next) =>
+	{
+		try
+		{
+		  await this.store_.deleteDevice(req.body.id)
+		  res.send({})
+		}
+		catch(err) { next(err) } 
+	})
 
     this.express_.use(async (err, req, res, next) =>
     {
@@ -120,6 +142,7 @@ class Controller
     {
       try
       {
+		console.log(msg)
         let device         = await this.store_.getDevice(msg.deviceId)
         if(!device) device = await this.store_.newDevice(msg.deviceId)
 
@@ -149,6 +172,11 @@ class Controller
     {
       if(err) console.error(err)
     })
+  }
+
+  handle_msg()
+  {
+    
   }
 };
 
