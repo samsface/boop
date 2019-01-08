@@ -1,3 +1,8 @@
+const net        = require('net')
+const SerialPort = require('serialport')
+
+///////////////////////////////////////////////////////////////////////////////
+
 class Protocol
 {
   constructor()
@@ -9,12 +14,10 @@ class Protocol
   {
     if(buffer) this.buffer_ = Buffer.concat([this.buffer_, buffer])
 
-    console.log('r', this.buffer_)
-
     if(this.buffer_.length >= 23)
     {
-      let address       = this.buffer_[1] << 8;
-      address          += this.buffer_[0];
+      let deviceId       = this.buffer_[1] << 8;
+      deviceId          += this.buffer_[0];
 
       let ackCode      = this.buffer_[3] << 8;
       ackCode         += this.buffer_[2]
@@ -28,16 +31,17 @@ class Protocol
 
       this.buffer_ = this.buffer_.slice(23)
   
-      return { address, ackCode, functionCode, data, crc }
+      return { deviceId, ackCode, functionCode, data, crc }
     }
     else return null
   }
 
-  write(address, ack_code, function_code, data)
+  write(deviceId, ack_code, function_code, data)
   {
+    console.log(deviceId, ack_code, function_code, data)
     const buffer = Buffer.alloc(23);
 
-    buffer.writeUInt16LE(address, 0)
+    buffer.writeUInt16LE(deviceId, 0)
     buffer.writeUInt16LE(ack_code, 2)
     buffer.writeUInt8(function_code, 4)
 
@@ -47,8 +51,6 @@ class Protocol
     }
  
     buffer.writeUInt16LE(0, 5)
-
-    console.log('w', buffer)
 
     return buffer
   }
@@ -87,9 +89,43 @@ class Serial
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class tcp
+class TCPServer
 {
+  constructor(host = '0.0.0.0', port = 8080)
+  {
+    this.events_ = 
+    {
+      open:  () => {},
+      data:  () => {},
+      error: () => {}
+    }
+
+    this.socks_ = []
   
+    this.server_ = net.createServer()
+
+    this.server_.on('connection', sock =>
+    {
+      this.socks_.push(sock)
+      this.events_.open()
+      sock.on('data', data => this.events_.data(data))
+    })
+
+    this.server_.listen(port, host, () =>
+    {
+      console.log(`tcp server is UP`)
+    })
+  }
+
+  write(buffer, fnc)
+  {
+    for(let sock of this.socks_)
+    {
+      sock.write(buffer)
+    }
+  }
+
+  on(name, fnc) { this.events_[name] = fnc }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -131,12 +167,12 @@ class Channel
     }
   }
 
-  write(address, ack_code, function_code, data, fnc = () => {})
+  write(deviceId, ack_code, function_code, data, fnc = () => {})
   {
     if(!this.open_) fnc(new Error('e_channel_not_open'))
     else 
     {
-      const buffer = this.protocol_.write(address, ack_code, function_code, data)
+      const buffer = this.protocol_.write(deviceId, ack_code, function_code, data)
       this.transport_.write(buffer, fnc)
     }
   }
@@ -167,7 +203,7 @@ class Comm
     {
       ack:          1,
       set_script0:  2,
-      set_address:  6,
+      set_deviceId:  6,
       set_is_relay: 7
     }
 
@@ -175,6 +211,7 @@ class Comm
     {
       set_led0_off:         1,
       set_led0_solid_white: 2,
+      set_led0_flash_white: 9,
   
       set_led1_off:         16,
       set_led1_solid_white: 17,
@@ -229,10 +266,8 @@ class Comm
       if(msg.ackCode in this.handles_) this.handles_[msg.ackCode].fnc(msg)
       delete this.handles_[msg.ackCode]
     }
-    else
-    {
-      this.events_.msg(msg, channel)
-    }
+
+    this.events_.msg(msg, channel)
   }
 
   on_error(channel, msg)
@@ -251,11 +286,22 @@ class Comm
     this.channels_.push(c)
   }
 
-  write_(address, function_code, data, fnc = () => {})
+  addTCPServerTransport(name, host, port, fnc = () => {})
+  {
+    const c = new Channel(name, new TCPServer(host, port), new Protocol())
+
+    c.on('open',  (...args) => this.on_open (c, ...args))
+    c.on('msg',   (...args) => this.on_msg  (c, ...args))
+    c.on('error', (...args) => this.on_error(c, ...args))
+
+    this.channels_.push(c)
+  }
+
+  write_(deviceId, function_code, data, fnc = () => {})
   {
     const ack_code = this.ack_code_++
 
-    this.channels_.forEach(c => c.write(address, ack_code, function_code, data, err =>
+    this.channels_.forEach(c => c.write(deviceId, ack_code, function_code, data, err =>
     {
       if(err) fnc(err)
       else    this.make_handle(ack_code, fnc)
@@ -276,11 +322,11 @@ class Comm
     this.write_(node, this.functionCodes.set_script0, data, fnc)
   }
 
-  setNodeAddress(node, address, fnc)
+  setNodedeviceId(node, deviceId, fnc)
   {
     const data = Buffer.alloc(2)
-    data.writeUInt16BE(Number(address))
-    this.write_(node, this.functionCodes.set_address, data, fnc)
+    data.writeUInt16BE(Number(deviceId))
+    this.write_(node, this.functionCodes.set_deviceId, data, fnc)
   }
 
   setNodeAsRelay(node, isRelay, fnc)
