@@ -19,6 +19,7 @@
                   <div class="media" >
                     <div class="media-content" style="overflow: hidden">
                       <p class="title is-3" style="text-transform: capitalize;">{{e.name || 'Unamed Device'}}</p>
+                      <p class="sub-title is-3" style="text-transform: capitalize;">#{{e.id}}</p>
                     </div>
                   </div>
               </div>
@@ -36,6 +37,33 @@
                               :error="handles[e.id + '_name'].error"
                               v-on:change="val => on_device_property_change(e.id, 'name', val)"/>
                       <p class="subtitle is-6">Your device will be called by this name in updates and stuff.</moment></p>
+                    </div>
+                  </div>
+              </div>
+            </div>
+            <!-- -->
+            <div class="card">
+              <div class="card-content" >
+                  <div class="media" >
+                    <div class="media-content" style="overflow: hidden">
+                      
+                      <div class="field">
+                        <label class="label">🤖 Program</label>
+
+                        <div class="select" v-for="i in e.script">
+                          <select>
+                            <option>Set LED Off</option>
+                            <option>Set LED On</option>
+                            <option>Wait for Button</option>
+                            <option>Wait for 500ms</option>
+                            <option>Wait for 1 sec</option>
+                            <option>Goto Start</option>
+                          </select>
+                        </div>
+
+                      </div>
+                    
+                      <p class="subtitle is-6">Your device will execute these instructions.</moment></p>
                     </div>
                   </div>
               </div>

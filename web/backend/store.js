@@ -15,6 +15,7 @@ class Store
         id          INTEGER NOT NULL PRIMARY KEY, 
         name        TEXT    NOT NULL DEFAULT '', 
         type        TEXT    NOT NULL DEFAULT 'unknown',
+        script      JSON    NOT NULL DEFAULT '[]',
         email       TEXT    NOT NULL DEFAULT '',
         sheetsEmail TEXT    NOT NULL DEFAULT '',
         sheetsId    TEXT    NOT NULL DEFAULT ''
@@ -30,7 +31,10 @@ class Store
   {
     return new Promise((resolve, reject) =>
     {
-      this.db_.all(`SELECT * FROM devices`, [], (err, res) =>
+      this.db_.all(`
+      SELECT
+        json(script) AS script
+      FROM devices`, [], (err, res) =>
       {
         if(err) reject(err)
         else    resolve(res)
@@ -42,7 +46,7 @@ class Store
   {
     return new Promise((resolve, reject) =>
     {
-      this.db_.all(`SELECT * FROM devices WHERE id=?`, [ id ], (err, res) =>
+      this.db_.all(`SELECT * FROM devices WHERE id=?`, [id], (err, res) =>
       {
         if(err) reject(err)
         else    resolve(res && res.length !== 0 ? res[0] : null)
@@ -55,8 +59,8 @@ class Store
     return new Promise((resolve, reject) =>
     {
       this.db_.run(`
-      INSERT INTO devices(id) VALUES(?)`, 
-      [ id ], 
+      INSERT INTO devices(id, script) VALUES(?, JSON(?))`, 
+      [id, '[100]'], 
       (err) =>
       {
         if(err) reject(err)
@@ -72,12 +76,13 @@ class Store
       this.db_.run(`
       UPDATE devices SET
         name        = IFNULL(?, name),
+        script      = JSON(IFNULL(?, script)),
         email       = IFNULL(?, email),
         sheetsEmail = IFNULL(?, sheetsEmail),
         sheetsId    = IFNULL(?, sheetsId)
       WHERE 
         id = ?`, 
-      [args.name, args.email, args.sheetsEmail, args.sheetsId, id], 
+      [args.name, args.script, args.email, args.sheetsEmail, args.sheetsId, id], 
       (err, res) =>
       {
         if(err) reject(err)

@@ -142,7 +142,6 @@ class Controller
     {
       try
       {
-		console.log(msg)
         let device         = await this.store_.getDevice(msg.deviceId)
         if(!device) device = await this.store_.newDevice(msg.deviceId)
 
@@ -165,7 +164,7 @@ class Controller
             ])
         }
       }
-      catch(err) { next(err) }
+      catch(err) { console.error(err) }
     })
 
     this.comm_.on('error', err =>
