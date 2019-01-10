@@ -7,145 +7,29 @@
 
     <div class="columns">
 
-      <div class="column is-half is-offset-one-quarter">
+      <div class="column is-half-desktop is-offset-one-quarter-desktop">
        
-        <h3 class="subtitle" ><small style="padding-left: 12px;">My Devices:</small></h3>
+        <h3 class="subtitle" ><small style="padding-left: 12px;"></small></h3>
 
-            
-
-      
-
-         <div class="hero-body">
-
-            <div class="container has-text-centered" style="transform: translate(0, -35px)">
-               <span class="bunnies">🤖💬</span>
-               <h1 class="title is-1">
-                  No devices
-               </h1>
-               <h2 class="subtitle">
-                  Try 
-               </h2>
-            </div>
-
-         </div>
-  
-
-        
-
-        <template v-for="e in this.res" >
-          <!-- -->
-          <div :key="e.id">
-            <div class="card">
-              <div class="card-content" >
-                  <div class="media" >
-                    <div class="media-content" style="overflow: hidden">
-                      <p class="title is-3" style="text-transform: capitalize;">{{e.name || 'Unamed Device'}}</p>
-                      <p class="sub-title is-3" style="text-transform: capitalize;">#{{e.id}}</p>
-                    </div>
-                  </div>
-              </div>
-            </div>
-            <!-- -->
-            <div class="card">
-              <div class="card-content" >
-                  <div class="media" >
-                    <div class="media-content" style="overflow: hidden">
-                      <inputt label="🆔 Device ID"
-                              placeholder="e.g. Porch Door Sensor"
-                              :value="e.name" 
-                              :working="handles[e.id + '_name'].timeout" 
-                              :success="handles[e.id + '_name'].success"
-                              :error="handles[e.id + '_name'].error"
-                              v-on:change="val => on_device_property_change(e.id, 'name', val)"/>
-                      <p class="subtitle is-6">Your device will be called by this name in updates and stuff.</moment></p>
-                    </div>
-                  </div>
-              </div>
-            </div>
-            <!-- -->
-            <div class="card">
-              <div class="card-content" >
-                  <div class="media" >
-                    <div class="media-content" style="overflow: hidden">
-                      
-                      <div class="field">
-                        <label class="label">⚙️ Program</label>
-
-                        <div class="columns is-multiline">
-                          
-                          <div class="column is-one-quarter-desktop is-half-tablet" v-for="i in e.script">
-
-                            <div class="select is-fullwidth" >
-                              <select>
-                                <option>Set LED Off</option>
-                                <option>Set LED On</option>
-                                <option>Wait for Button</option>
-                                <option>Wait for 500ms</option>
-                                <option>Wait for 1 sec</option>
-                                <option value=100>Goto Start</option>
-                              </select>
-                            </div>
-
-                          </div>
-
-                        </div>
-
-                      </div>
-                    
-                      <p class="subtitle is-6">Your device will execute these instructions.</moment></p>
-                    </div>
-                  </div>
-              </div>
-            </div>
-            <!-- -->
-            <div class="card">
-              <div class="card-content" >
-                  <div class="media" >
-                    <div class="media-content" style="overflow: hidden">
-                      <inputt label="✉️ Email Updates"
-                              placeholder="e.g. youremail@email.com"
-                              :value="e.email" 
-                              :working="handles[e.id + '_email'].timeout" 
-                              :success="handles[e.id + '_email'].success"
-                              :error="handles[e.id + '_email'].error"
-                              v-on:change="val => on_device_property_change(e.id, 'email', val)"/>
-                      <p class="subtitle is-6">Your device will email updates to this address.</moment></p>                      
-                    </div>
-                  </div>
-              </div>
-            </div>
-            <!-- -->
-            <div class="card">
-              <div class="card-content" >
-                  <div class="media" >
-                    <div class="media-content" style="overflow: hidden">
-                      <inputt label="📉 Google Sheets"
-                              placeholder="e.g. youremail@gmail.com"
-                              :value="e.sheetsEmail" 
-                              :working="handles[e.id + '_sheetsEmail'].timeout" 
-                              :success="handles[e.id + '_sheetsEmail'].success"
-                              v-on:change="val => on_device_property_change(e.id, 'sheetsEmail', val)"/>
-                      <p class="subtitle is-6">Your device will feed data into a sheet on your Google Drive.</moment></p>
-                      <p v-if="e.sheetsId" class="subtitle is-6"><a class="has-text-link" :href="link(e.sheetsId)">Open in Google Sheets</a></p>           
-                    </div>
-                  </div>
-              </div>
-            </div>
-            <!-- -->
-            <div class="card">
-              <div class="card-content" >
-                  <div class="media" >
-                    <div class="media-content" style="overflow: hidden">
-                      <a class="button is-danger" v-on:click="on_delete_device(e.id)">Forget this Device</a>
-                    </div>
-                  </div>
-              </div>
-            </div>
-            <!-- -->
-            <div style="padding: 10px"></div>
+        <!-- no devices -->
+        <div class="hero-body" v-if="res.length === 0 && !working">
+          <div class="container has-text-centered" style="transform: translate(0, -35px)">
+            <h1 class="title is-1">
+              🤔 No devices yet...
+            </h1>
+            <h2 class="subtitle">
+              Have you tried turning them off and on again?
+            </h2>
           </div>
-  
-        </template>
+        </div>
+        <!-- /no devices -->
+        
+        <device 
+          v-for="r in this.res"
+          :key="r.id"
+          :res="r"
+          :on_property_change="on_property_change"
+          :on_delete_device="on_delete_device"/>
 
       </div>
     </div>
@@ -159,32 +43,33 @@
 <script>
 import Navv  from './Navv'
 import Footerr from './Footerr'
-import Moment  from './Moment'
-import Inputt  from './Inputt'
+import Device from  './Device'
 import cfg from '@/utils/cfg'
 import session from '@/utils/session'
 import api from '@/utils/api'
 
-function on_device_property_change(id, property, value)
+function created()
 {
-  this.$set(this.handles[id + '_' + property], 'success', null)
-  this.$set(this.handles[id + '_' + property], 'error',   null)
+  this.working = true
 
-  clearTimeout(this.handles[id + '_' + property].timeout)
-  this.handles[id + '_' + property].timeout = setTimeout(() =>
+  api.get_devices({}, (err, res) =>
   {
-    api.set_device({ id, [property]: value }, (err, res) =>
+    this.working = false
+    this.res     = res
+  })
+}
+
+function on_property_change(id, property, value, fnc)
+{
+  api.set_device({ id, [property]: value }, (err, res) =>
+  {
+    if(err) fnc(err.message)
+    else
     {
-      if(err) this.$set(this.handles[id + '_' + property], 'error', 'Ooops, something went wrong.')
-      else
-      {
-        this.res.find(r => r.id == id)[property] = value
-        this.$set(this.handles[id + '_' + property], 'success', 'Device setting changed OK.')
-      }
-   
-      this.handles[id + '_' + property].timeout = null
-    })
-  }, 500)
+      this.$set(this.res, this.res.findIndex(r => r.id == id), res)
+      fnc(null, 'Saved ok :)')
+    }
+  })
 }
 
 function on_delete_device(id)
@@ -198,42 +83,20 @@ function on_delete_device(id)
   })
 }
 
-function created()
-{
-  api.get_devices({}, (err, res) =>
-  {
-    for(let k of res)
-    {
-      this.$set(this.handles, k.id + '_name',        { success: null, error: null, timeout: null })
-      this.$set(this.handles, k.id + '_email',       { success: null, error: null, timeout: null })
-      this.$set(this.handles, k.id + '_sheetsEmail', { success: null, error: null, timeout: null })
-    }
-    this.res = res
-  })
-}
-
-function link(sheetId)
-{
-  return `https://docs.google.com/spreadsheets/d/${sheetId}`
-}
-
 export default 
 {
   name: 'devices',
   data () 
   {
     return {
-      session,
-      req: null,
-      res: [],
-      err: null,
-      is_busy: false,
-      handles: {}
+      res:     [],
+      err:     null,
+      working: false
     }
   },
   created: created,
-  methods: { on_device_property_change, on_delete_device, link },
-  components: { Navv, Footerr, Inputt }
+  methods: { on_property_change, on_delete_device },
+  components: { Navv, Footerr, Device }
 }
 </script>
 

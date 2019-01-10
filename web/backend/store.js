@@ -88,7 +88,7 @@ class Store
       (err, res) =>
       {
         if(err) reject(err)
-        else    resolve({})
+        else    resolve(args)
       })
     })
   }

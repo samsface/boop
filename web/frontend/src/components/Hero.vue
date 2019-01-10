@@ -1,7 +1,7 @@
 <template>
    <span>
 
-      <section class="hero is-fullheight">
+      <section class="hero is-fullheight is-light">
 
          <navv/>
 

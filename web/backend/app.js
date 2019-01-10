@@ -8,30 +8,6 @@ const Mailer     = require('./mailer')
 const Sheets     = require('./sheets')
 const validator  = require('validator')
 
-class Device
-{
-  constructor(args)
-  {
-    args.id = parseInt(args.id)
-    //if(!isNaN(args.id)) throw new Error('badId')
-
-    this.id_          = args.id
-    this.name         = args.name
-    this.type         = args.type
-    this.email        = args.email
-    this.sheetsEmail  = args.sheetsEmail
-    this.sheetsId     = args.sheetsId
-  }
-
-  get id()             { return this.id_ }
-  get email()          { return this.email_ }
-  get sheetsEmail()    { return this.sheetsEmail_ }
-  get sheetsId()       { return this.sheetsId_ }
-  set email(val)       { if(val && !validator.isEmail(val)) throw new Error('badEmail'); this.email_       = val }
-  set sheetsEmail(val) { if(val && !validator.isEmail(val)) throw new Error('badEmail'); this.sheetsEmail_ = val }
-  set sheetsId(val)    { this.sheetsId_ = val }
-}
-
 class Controller
 {
   constructor(cfg)
@@ -71,7 +47,7 @@ class Controller
     {
       try
       {
-        const device = new Device(await this.store_.getDevice(req.body.id))
+        const device = await this.store_.getDevice(req.body.id)
 
         if('sheetsEmail' in req.body &&
            device.sheetsEmail != req.body.sheetsEmail)
