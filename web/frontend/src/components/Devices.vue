@@ -11,6 +11,27 @@
        
         <h3 class="subtitle" ><small style="padding-left: 12px;">My Devices:</small></h3>
 
+            
+
+      
+
+         <div class="hero-body">
+
+            <div class="container has-text-centered" style="transform: translate(0, -35px)">
+               <span class="bunnies">🤖💬</span>
+               <h1 class="title is-1">
+                  No devices
+               </h1>
+               <h2 class="subtitle">
+                  Try 
+               </h2>
+            </div>
+
+         </div>
+  
+
+        
+
         <template v-for="e in this.res" >
           <!-- -->
           <div :key="e.id">
@@ -48,17 +69,25 @@
                     <div class="media-content" style="overflow: hidden">
                       
                       <div class="field">
-                        <label class="label">🤖 Program</label>
+                        <label class="label">⚙️ Program</label>
 
-                        <div class="select" v-for="i in e.script">
-                          <select>
-                            <option>Set LED Off</option>
-                            <option>Set LED On</option>
-                            <option>Wait for Button</option>
-                            <option>Wait for 500ms</option>
-                            <option>Wait for 1 sec</option>
-                            <option>Goto Start</option>
-                          </select>
+                        <div class="columns is-multiline">
+                          
+                          <div class="column is-one-quarter-desktop is-half-tablet" v-for="i in e.script">
+
+                            <div class="select is-fullwidth" >
+                              <select>
+                                <option>Set LED Off</option>
+                                <option>Set LED On</option>
+                                <option>Wait for Button</option>
+                                <option>Wait for 500ms</option>
+                                <option>Wait for 1 sec</option>
+                                <option value=100>Goto Start</option>
+                              </select>
+                            </div>
+
+                          </div>
+
                         </div>
 
                       </div>

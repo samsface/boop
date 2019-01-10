@@ -32,12 +32,14 @@ class Store
     return new Promise((resolve, reject) =>
     {
       this.db_.all(`
-      SELECT
-        json(script) AS script
-      FROM devices`, [], (err, res) =>
+      SELECT * FROM devices`, [], (err, res) =>
       {
         if(err) reject(err)
-        else    resolve(res)
+        else
+        {
+          for(const i in res) res[i].script = JSON.parse(res[i].script)
+          resolve(res)
+        }
       })
     })
   }
@@ -59,8 +61,8 @@ class Store
     return new Promise((resolve, reject) =>
     {
       this.db_.run(`
-      INSERT INTO devices(id, script) VALUES(?, JSON(?))`, 
-      [id, '[100]'], 
+      INSERT INTO devices(id) VALUES(?)`, 
+      [id], 
       (err) =>
       {
         if(err) reject(err)
@@ -76,7 +78,7 @@ class Store
       this.db_.run(`
       UPDATE devices SET
         name        = IFNULL(?, name),
-        script      = JSON(IFNULL(?, script)),
+        script      = IFNULL(?, script),
         email       = IFNULL(?, email),
         sheetsEmail = IFNULL(?, sheetsEmail),
         sheetsId    = IFNULL(?, sheetsId)
