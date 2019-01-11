@@ -9,7 +9,7 @@
 
       <div class="column is-half-desktop is-offset-one-quarter-desktop">
        
-        <h3 class="subtitle" ><small style="padding-left: 12px;"></small></h3>
+      
 
         <!-- no devices -->
         <div class="hero-body" v-if="res.length === 0 && !working">
@@ -66,6 +66,7 @@ function on_property_change(id, property, value, fnc)
     if(err) fnc(err.message)
     else
     {
+      console.log(res)
       this.$set(this.res, this.res.findIndex(r => r.id == id), res)
       fnc(null, 'Saved ok :)')
     }

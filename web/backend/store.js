@@ -51,7 +51,11 @@ class Store
       this.db_.all(`SELECT * FROM devices WHERE id=?`, [id], (err, res) =>
       {
         if(err) reject(err)
-        else    resolve(res && res.length !== 0 ? res[0] : null)
+        else
+        {
+          for(const i in res) res[i].script = JSON.parse(res[i].script)
+          resolve(res && res.length !== 0 ? res[0] : null)
+        }
       })
     })
   }
@@ -73,6 +77,7 @@ class Store
 
   updateDevice(id, args)
   {
+    console.log('sam', args)
     return new Promise((resolve, reject) =>
     {
       this.db_.run(`
@@ -84,7 +89,7 @@ class Store
         sheetsId    = IFNULL(?, sheetsId)
       WHERE 
         id = ?`, 
-      [args.name, args.script, args.email, args.sheetsEmail, args.sheetsId, id], 
+      [args.name, JSON.stringify(args.script), args.email, args.sheetsEmail, args.sheetsId, id], 
       (err, res) =>
       {
         if(err) reject(err)

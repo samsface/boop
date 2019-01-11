@@ -27,42 +27,20 @@
       </div>
     </div>
     <!-- /name -->
-    <!--
+    <!-- script -->
     <div class="card">
-        <div class="card-content" >
-            <div class="media" >
-            <div class="media-content" style="overflow: hidden">
-                
-                <div class="field">
-                <label class="label">⚙️ Program</label>
-
-                <div class="columns is-multiline">
-                    
-                    <div class="column is-one-quarter-desktop is-half-tablet" v-for="i in res.script">
-
-                    <div class="select is-fullwidth" >
-                        <select>
-                        <option>Set LED Off</option>
-                        <option>Set LED On</option>
-                        <option>Wait for Button</option>
-                        <option>Wait for 500ms</option>
-                        <option>Wait for 1 sec</option>
-                        <option value=100>Goto Start</option>
-                        </select>
-                    </div>
-
-                    </div>
-
-                </div>
-
-                </div>
-            
-                <p class="subtitle is-6">Your device will execute these instructions.</moment></p>
-            </div>
-            </div>
+      <div class="card-content" >
+        <div class="media" >
+          <div class="media-content" style="overflow: hidden">
+            <scriptt 
+              :res="res.script"
+              @submit="(val, fnc) => on_property_change(res.id, 'script', val, fnc)"/>
+            <p class="subtitle is-6">Your device will execute this script from left to right, line by line.</moment></p>
+          </div>
         </div>
+      </div>
     </div>
-    -->
+    <!-- script -->
     <!-- email -->
     <div class="card">
       <div class="card-content" >
@@ -111,6 +89,7 @@
 
 <script>
 import Inputt  from './Inputt'
+import Scriptt  from './Scriptt'
 
 function link(sheetId)
 {
@@ -127,7 +106,7 @@ export default
     }
   },
   methods: { link },
-  components: { Inputt }
+  components: { Inputt, Scriptt }
 }
 </script>
 

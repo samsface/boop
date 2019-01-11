@@ -68,6 +68,11 @@ class Controller
           }
         }
 
+        if('script' in req.body)
+        {
+          device.script = req.body.script
+        }
+
         if('email' in req.body && 
            device.email != req.body.email)
         {

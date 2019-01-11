@@ -7,6 +7,6 @@ function is_mobile()
 
 export default 
 {
-  rest_endpoint: 'http://localhost:9090/api/v1', //`http://${window.location.hostname}:8081/api`, //'http://ec2-52-87-242-186.compute-1.amazonaws.com/api',
+  rest_endpoint: `http://${window.location.hostname}:9090/api/v1`, //`http://${window.location.hostname}:8081/api`, //'http://ec2-52-87-242-186.compute-1.amazonaws.com/api',
   is_mobile: is_mobile()
 }
