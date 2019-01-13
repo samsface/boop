@@ -15,7 +15,7 @@ class Store
         id          INTEGER NOT NULL PRIMARY KEY, 
         name        TEXT    NOT NULL DEFAULT '', 
         type        TEXT    NOT NULL DEFAULT 'unknown',
-        script      JSON    NOT NULL DEFAULT '[]',
+        script      JSON    NOT NULL DEFAULT '[100, 100, 100, 100, 100, 100, 100, 100]',
         email       TEXT    NOT NULL DEFAULT '',
         sheetsEmail TEXT    NOT NULL DEFAULT '',
         sheetsId    TEXT    NOT NULL DEFAULT ''

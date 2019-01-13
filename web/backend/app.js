@@ -34,6 +34,12 @@ class Controller
     this.express_.use(bodyParser.json())
     this.express_.use(bodyParser.urlencoded({ extended: true }))
 
+    this.express_.use(async (err, req, res, next) =>
+    {
+      console.error(req.body)
+      next()
+    })
+
     this.express_.get('/api/v1/devices', async (req, res, next) =>
     {
       try
@@ -68,11 +74,6 @@ class Controller
           }
         }
 
-        if('script' in req.body)
-        {
-          device.script = req.body.script
-        }
-
         if('email' in req.body && 
            device.email != req.body.email)
         {
@@ -84,21 +85,28 @@ class Controller
         {
           device.name = req.body.name
         }
+        
+        if('script' in req.body)
+        {
+          device.script = req.body.script
+
+          await this.comm_.setNodeScript(device.id, 0, device.script)
+        }
 
         res.json(await this.store_.updateDevice(device.id, device))
       }
       catch(err) { next(err) } 
     })
 	
-	this.express_.delete('/api/v1/devices', async (req, res, next) =>
-	{
-		try
-		{
-		  await this.store_.deleteDevice(req.body.id)
-		  res.send({})
-		}
-		catch(err) { next(err) } 
-	})
+    this.express_.delete('/api/v1/devices', async (req, res, next) =>
+    {
+      try
+      {
+        await this.store_.deleteDevice(req.body.id)
+        res.send({})
+      }
+      catch(err) { next(err) } 
+    })
 
     this.express_.use(async (err, req, res, next) =>
     {

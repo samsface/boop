@@ -319,8 +319,15 @@ class Comm
 
   setNodeScript(node, scriptIdx, script, fnc)
   {
-    const data = Buffer.from(script)
-    this.write_(node, this.functionCodes.set_script0, data, fnc)
+    return new Promise((resolve, reject) =>
+    {
+      const data = Buffer.from(script)
+      this.write_(node, this.functionCodes.set_script0, data, err =>
+      {
+        if(err) reject(err)
+        else    resolve()
+      })
+    })
   }
 
   setNodedeviceId(node, deviceId, fnc)
